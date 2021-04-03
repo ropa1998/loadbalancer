@@ -1,7 +1,5 @@
 # open a gRPC channel
-import logging
 
-import grpc
 from retrying import retry
 
 import geoService_pb2

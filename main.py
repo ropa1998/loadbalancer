@@ -1,4 +1,5 @@
 import grpc
+import yaml
 from flask import Flask, request
 
 # Init app
@@ -6,36 +7,43 @@ from service.geo_service_client import GeoServiceClient
 
 app = Flask(__name__)
 
-# channels = [grpc.insecure_channel('localhost:50051'),
-#             grpc.insecure_channel('localhost:50052'),
-#             grpc.insecure_channel('localhost:50057')]
+yamlfile = open("config.yaml", "r")
 
-channels = [grpc.insecure_channel('localhost:50050'), grpc.insecure_channel('localhost:50051')]
+addresses = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
-geoservice = GeoServiceClient(channels)
+geoservices_addresses_string = addresses["geoservices"]
+
+
+def create_channel(address):
+    return grpc.insecure_channel(address)
+
+
+geoservices_channels = list(map(create_channel, geoservices_addresses_string))
+
+geoservices_addresses = GeoServiceClient(geoservices_channels)
 
 
 @app.route('/api/countries', methods=['GET'])
 def get_countries():
-    return {"countries": geoservice.get_countries()}
+    return {"countries": geoservices_addresses.get_countries()}
 
 
 @app.route('/api/states', methods=['GET'])
 def get_states():
     content = request.get_json()
-    return {"states": geoservice.get_states(content["country"])}
+    return {"states": geoservices_addresses.get_states(content["country"])}
 
 
 @app.route('/api/cities', methods=['GET'])
 def get_cities():
     content = request.get_json()
-    return {"cities": geoservice.get_cities(content["state"])}
+    return {"cities": geoservices_addresses.get_cities(content["state"])}
 
 
 @app.route('/api/location-for-ip', methods=['GET'])
 def get_location_for_id():
     content = request.get_json()
-    return {"location": geoservice.get_location_for_ip(content["ip"])}
+    return {"location": geoservices_addresses.get_location_for_ip(content["ip"])}
 
 
 # A method that runs the application server.
