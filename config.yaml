@@ -3,4 +3,5 @@ geoservices:
   - "localhost:50052"
   - "localhost:50057"
 authservices:
+max_retries: 10
 

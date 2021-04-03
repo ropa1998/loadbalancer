@@ -1,12 +1,14 @@
 # open a gRPC channel
-
+import yaml
 from retrying import retry
 
 import geoService_pb2
 import geoService_pb2_grpc
 from load_balancer.RoundRobinBalancer import RoundRobinBalancer
 
-max_retries = 10
+yamlfile = open("config.yaml", "r")
+yaml_info = yaml.load(yamlfile, Loader=yaml.FullLoader)
+max_retries = yaml_info["max_retries"]
 
 
 class GeoServiceClient:

@@ -9,9 +9,9 @@ app = Flask(__name__)
 
 yamlfile = open("config.yaml", "r")
 
-addresses = yaml.load(yamlfile, Loader=yaml.FullLoader)
+yaml_info = yaml.load(yamlfile, Loader=yaml.FullLoader)
 
-geoservices_addresses_string = addresses["geoservices"]
+geoservices_addresses_string = yaml_info["geoservices"]
 
 
 def create_channel(address):
