@@ -6,4 +6,5 @@ class RoundRobinBalancer():
         self.round_robin = itertools.cycle(channels)
 
     def get_channel(self):
-        return self.round_robin.__next__()
+        next__ = self.round_robin.__next__()
+        return next__

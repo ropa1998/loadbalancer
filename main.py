@@ -1,16 +1,16 @@
 import grpc
-from flask import Flask, request, jsonify
-import sqlite3
-import os
+from flask import Flask, request
 
 # Init app
-from geo_service_client import GeoServiceClient
+from service.geo_service_client import GeoServiceClient
 
 app = Flask(__name__)
 
-channels = [grpc.insecure_channel('localhost:50051'),
-            grpc.insecure_channel('localhost:50052'),
-            grpc.insecure_channel('localhost:50057')]
+# channels = [grpc.insecure_channel('localhost:50051'),
+#             grpc.insecure_channel('localhost:50052'),
+#             grpc.insecure_channel('localhost:50057')]
+
+channels = [grpc.insecure_channel('localhost:50050'), grpc.insecure_channel('localhost:50051')]
 
 geoservice = GeoServiceClient(channels)
 
@@ -32,7 +32,7 @@ def get_cities():
     return {"cities": geoservice.get_cities(content["state"])}
 
 
-@app.route('/api/location-for-id', methods=['GET'])
+@app.route('/api/location-for-ip', methods=['GET'])
 def get_location_for_id():
     content = request.get_json()
     return {"location": geoservice.get_location_for_ip(content["ip"])}
