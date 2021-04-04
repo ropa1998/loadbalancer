@@ -6,7 +6,7 @@ import geoService_pb2
 import geoService_pb2_grpc
 from load_balancer.RoundRobinBalancer import RoundRobinBalancer
 
-yamlfile = open("config.yaml", "r")
+yamlfile = open("/home/matias/projects/facultad/distribuidos/loadbalancer-python/config.yaml", "r")
 yaml_info = yaml.load(yamlfile, Loader=yaml.FullLoader)
 max_retries = yaml_info["max_retries"]
 
