@@ -8,7 +8,7 @@ from service.geo_service_client import GeoServiceClient
 
 app = Flask(__name__)
 
-yamlfile = open("/home/matias/projects/facultad/distribuidos/loadbalancer-python/config.yaml", "r")
+yamlfile = open("config.yaml", "r")
 
 yaml_info = yaml.load(yamlfile, Loader=yaml.FullLoader)
 

@@ -6,7 +6,7 @@ from load_balancer.RoundRobinBalancer import RoundRobinBalancer
 from users_pb2 import LoginRequest
 from users_pb2_grpc import UsersStub
 
-yamlfile = open("/home/matias/projects/facultad/distribuidos/loadbalancer-python/config.yaml", "r")
+yamlfile = open("config.yaml", "r")
 yaml_info = yaml.load(yamlfile, Loader=yaml.FullLoader)
 max_retries = yaml_info["max_retries"]
 
