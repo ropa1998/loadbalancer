@@ -35,7 +35,7 @@ auth_addresses = AuthServiceClient(auth_channels)
 def get_countries():
     content = request.get_json()
     response = authenticate(content)
-    if response.status == constants['authenticated']:
+    if response['status'] == constants['authenticated']:
         return {"countries": geoservices_addresses.get_countries()}
     return {"error": "Not-authenticated"}
 
@@ -45,7 +45,7 @@ def get_countries():
 def get_states():
     content = request.get_json()
     response = authenticate(content)
-    if response.status == constants['authenticated']:
+    if response['status'] == constants['authenticated']:
         return {"states": geoservices_addresses.get_states(content["country"])}
     return {"error": "Not-authenticated"}
 
@@ -55,7 +55,7 @@ def get_states():
 def get_cities():
     content = request.get_json()
     response = authenticate(content)
-    if response.status == constants['authenticated']:
+    if response['status'] == constants['authenticated']:
         return {"cities": geoservices_addresses.get_cities(content["state"])}
     return {"error": "Not-authenticated"}
 
@@ -64,7 +64,7 @@ def get_cities():
 def get_location_for_id():
     content = request.get_json()
     response = authenticate(content)
-    if response.status == constants['authenticated']:
+    if response['status'] == constants['authenticated']:
         return {"location": geoservices_addresses.get_location_for_ip(content["ip"])}
     return {"error": "Not-authenticated"}
 
