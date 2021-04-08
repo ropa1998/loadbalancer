@@ -21,11 +21,8 @@ class AuthServiceClient:
     def authenticate(self, email, password):
         stub = self.get_stub()
         login_request = LoginRequest(email=email, password=password)
-        try:
-            stub.Authenticate(login_request)
-            return constants['authenticated']
-        except Exception:
-            return constants['failed']
+        stub.Authenticate(login_request)
+        return constants['authenticated']
 
     def get_stub(self):
         channel = self.balancer.get_channel()
