@@ -8,14 +8,25 @@ from service.geo_service_client import GeoServiceClient
 
 app = Flask(__name__)
 
-yamlfile = open("config.yaml", "r")
 
-yaml_info = yaml.load(yamlfile, Loader=yaml.FullLoader)
+def get_yaml():
+    yamlfile = open("config.yaml", "r")
+    return yaml.load(yamlfile, Loader=yaml.FullLoader)
 
-geoservices_addresses_string = yaml_info["geoservices"]
 
-auth_addresses_string = yaml_info["authservices"]
+def get_geoservices_adresses():
+    yaml_info = get_yaml()
+    return yaml_info["geoservices"]
 
+
+def get_authservices_addresses():
+    yaml_info = get_yaml()
+    return yaml_info["authservices"]
+
+
+geoservices_addresses_string = get_geoservices_adresses()
+
+auth_addresses_string = get_authservices_addresses()
 
 
 def create_channel(address):
@@ -40,7 +51,6 @@ def get_countries():
     return {"error": "Not-authenticated"}
 
 
-
 @app.route('/api/states', methods=['POST'])
 def get_states():
     content = request.get_json()
@@ -48,7 +58,6 @@ def get_states():
     if response['status'] == constants['authenticated']:
         return {"states": geoservices_addresses.get_states(content["country"])}
     return {"error": "Not-authenticated"}
-
 
 
 @app.route('/api/cities', methods=['POST'])

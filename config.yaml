@@ -1,6 +1,8 @@
 geoservices:
   - "localhost:50051"
+  - "localhost:50052"
 authservices:
   - "localhost:9090"
+  - "localhost:9091"
 max_retries: 10
 
