@@ -7,3 +7,4 @@ requests
 flask
 retrying
 pyyaml
+etcd3

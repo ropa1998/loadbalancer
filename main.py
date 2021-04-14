@@ -1,6 +1,7 @@
 import grpc
 import yaml
 from flask import Flask, request
+import etcd3
 
 # Init app
 from service.auth_service_client import AuthServiceClient, constants
@@ -8,15 +9,13 @@ from service.geo_service_client import GeoServiceClient
 
 app = Flask(__name__)
 
-
-def get_yaml():
-    yamlfile = open("config.yaml", "r")
-    return yaml.load(yamlfile, Loader=yaml.FullLoader)
+client = etcd3.client(host='127.0.0.1', port=2379)
 
 
 def get_geoservices_adresses():
-    yaml_info = get_yaml()
-    return yaml_info["geoservices"]
+    values = client.get_prefix('/services/geo')
+    for value, x in values:
+        yield value.decode("utf-8")
 
 
 def get_authservices_addresses():
@@ -40,6 +39,10 @@ geoservices_addresses = GeoServiceClient(geoservices_channels)
 auth_channels = list(map(create_channel, auth_addresses_string))
 
 auth_addresses = AuthServiceClient(auth_channels)
+
+
+# lo que tengo que hacer ahora es primero levantar los que este publicados y crearlos
+# despues tengo que armarme un watcher que sepa reaccionar al auth y al geo
 
 
 @app.route('/api/countries', methods=['POST'])
