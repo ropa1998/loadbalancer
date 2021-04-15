@@ -14,6 +14,16 @@ client = etcd3.client(host='127.0.0.1', port=2379)
 auth_route = 'service/auth/'
 geo_route = 'service/geo/'
 
+
+def solve_auth_changes(event):
+    if isinstance(event.events[0], etcd3.events.DeleteEvent):
+        if isinstance(event.events[0], etcd3.events.):
+            self.is_leader = False
+
+
+client.add_watch_prefix_callback(auth_route, solve_auth_changes)
+client.add_watch_prefix_callback(geo_route, solve_geo_changes)
+
 auth_nodes_map = dict()
 
 
@@ -30,20 +40,20 @@ def get_authservices_addresses():
         yield value.decode("utf-8")
 
 
-def subscribe_auth_addresses():
-    events_iterator = client.watch_prefix(auth_route)
-    for event in events_iterator[0]:
-        auth_nodes_map[event.key.decode("utf-8")] = event.value.decode("utf-8")
-        yield event.value
-
-        # auth_channels = list(map(create_channel, auth_addresses_string))
-        # auth_addresses = AuthServiceClient(auth_channels)
-
-
-def subscribe_geo_addresses():
-    events_iterator = client.watch_prefix(geo_route)
-    for event in events_iterator:
-        print(event)
+# def subscribe_auth_addresses():
+#     events_iterator = client.watch_prefix(auth_route)
+#     for event in events_iterator[0]:
+#         auth_nodes_map[event.key.decode("utf-8")] = event.value.decode("utf-8")
+#         yield event.value
+#
+#         # auth_channels = list(map(create_channel, auth_addresses_string))
+#         # auth_addresses = AuthServiceClient(auth_channels)
+#
+#
+# def subscribe_geo_addresses():
+#     events_iterator = client.watch_prefix(geo_route)
+#     for event in events_iterator:
+#         print(event)
 
 
 geoservices_addresses_string = get_geoservices_adresses()
@@ -62,8 +72,6 @@ geoservices_addresses = GeoServiceClient(geoservices_channels)
 auth_channels = list(map(create_channel, auth_addresses_string))
 
 auth_addresses = AuthServiceClient(auth_channels)
-
-subscribe_auth_addresses()
 
 
 # lo que tengo que hacer ahora es primero levantar los que este publicados y crearlos
