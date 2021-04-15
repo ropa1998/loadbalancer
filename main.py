@@ -11,16 +11,39 @@ app = Flask(__name__)
 
 client = etcd3.client(host='127.0.0.1', port=2379)
 
+auth_route = 'service/auth/'
+geo_route = 'service/geo/'
+
+auth_nodes_map = dict()
+
 
 def get_geoservices_adresses():
-    values = client.get_prefix('/services/geo')
+    values = client.get_prefix(geo_route)
     for value, x in values:
         yield value.decode("utf-8")
 
 
 def get_authservices_addresses():
-    yaml_info = get_yaml()
-    return yaml_info["authservices"]
+    values = client.get_prefix(auth_route)
+    for value, x in values:
+        auth_nodes_map[x.key.decode("utf-8")] = value.decode("utf-8")
+        yield value.decode("utf-8")
+
+
+def subscribe_auth_addresses():
+    events_iterator = client.watch_prefix(auth_route)
+    for event in events_iterator[0]:
+        auth_nodes_map[event.key.decode("utf-8")] = event.value.decode("utf-8")
+        yield event.value
+
+        # auth_channels = list(map(create_channel, auth_addresses_string))
+        # auth_addresses = AuthServiceClient(auth_channels)
+
+
+def subscribe_geo_addresses():
+    events_iterator = client.watch_prefix(geo_route)
+    for event in events_iterator:
+        print(event)
 
 
 geoservices_addresses_string = get_geoservices_adresses()
@@ -39,6 +62,8 @@ geoservices_addresses = GeoServiceClient(geoservices_channels)
 auth_channels = list(map(create_channel, auth_addresses_string))
 
 auth_addresses = AuthServiceClient(auth_channels)
+
+subscribe_auth_addresses()
 
 
 # lo que tengo que hacer ahora es primero levantar los que este publicados y crearlos
