@@ -16,15 +16,52 @@ geo_route = 'service/geo/'
 
 
 def solve_auth_changes(event):
+    global auth_addresses
+
     if isinstance(event.events[0], etcd3.events.DeleteEvent):
-        if isinstance(event.events[0], etcd3.events.):
-            self.is_leader = False
+        auth_nodes_map.pop(event.events[0].key.decode("utf-8"))
+
+        new_channels = list(map(create_channel, list(auth_nodes_map.values())))
+
+        auth_addresses = AuthServiceClient(new_channels)
+
+    if isinstance(event.events[0], etcd3.events.PutEvent):
+        if auth_nodes_map[event.events[0].key.decode("utf-8")] == event.events[0].value.decode("utf-8"):
+            return
+
+        auth_nodes_map[event.events[0].key.decode("utf-8")] = event.events[0].value.decode("utf-8")
+
+        new_channels = list(map(create_channel, list(auth_nodes_map.values())))
+
+        auth_addresses = AuthServiceClient(new_channels)
+
+
+def solve_geo_changes(event):
+    global geoservices_addresses
+
+    if isinstance(event.events[0], etcd3.events.DeleteEvent):
+        geo_nodes_map.pop(event.events[0].key.decode("utf-8"))
+
+        new_channels = list(map(create_channel, list(geo_nodes_map.values())))
+
+        geoservices_addresses = GeoServiceClient(new_channels)
+
+    if isinstance(event.events[0], etcd3.events.PutEvent):
+        if geo_nodes_map[event.events[0].key.decode("utf-8")] == event.events[0].value.decode("utf-8"):
+            return
+
+        geo_nodes_map[event.events[0].key.decode("utf-8")] = event.events[0].value.decode("utf-8")
+
+        new_channels = list(map(create_channel, list(geo_nodes_map.values())))
+
+        geoservices_addresses = GeoServiceClient(new_channels)
 
 
 client.add_watch_prefix_callback(auth_route, solve_auth_changes)
 client.add_watch_prefix_callback(geo_route, solve_geo_changes)
 
 auth_nodes_map = dict()
+geo_nodes_map = dict()
 
 
 def get_geoservices_adresses():
