@@ -6,6 +6,7 @@ import etcd3
 # Init app
 from service.auth_service_client import AuthServiceClient, constants
 from service.geo_service_client import GeoServiceClient
+from service.stock_service_client import StockServiceClient
 
 app = Flask(__name__)
 
@@ -13,6 +14,7 @@ client = etcd3.client(host='127.0.0.1', port=2379)
 
 auth_route = '/services/auth'
 geo_route = '/services/geo'
+stock_route = '/services/stock'
 
 
 def solve_auth_changes(event):
@@ -57,11 +59,40 @@ def solve_geo_changes(event):
         geoservices_addresses = GeoServiceClient(new_channels)
 
 
+def solve_stock_changes(event):
+    global stockservices_addresses
+
+    if isinstance(event.events[0], etcd3.events.DeleteEvent):
+        stock_nodes_map.pop(event.events[0].key.decode("utf-8"))
+
+        new_channels = list(map(create_channel, list(stock_nodes_map.values())))
+
+        stockservices_addresses = StockServiceClient(new_channels)
+
+    if isinstance(event.events[0], etcd3.events.PutEvent):
+        if stock_nodes_map.get(event.events[0].key.decode("utf-8")) == event.events[0].value.decode("utf-8"):
+            return
+
+        stock_nodes_map[event.events[0].key.decode("utf-8")] = event.events[0].value.decode("utf-8")
+
+        new_channels = list(map(create_channel, list(stock_nodes_map.values())))
+
+        stockservices_addresses = StockServiceClient(new_channels)
+
+
 client.add_watch_prefix_callback(auth_route, solve_auth_changes)
 client.add_watch_prefix_callback(geo_route, solve_geo_changes)
+client.add_watch_prefix_callback(stock_route, solve_stock_changes)
 
 auth_nodes_map = dict()
 geo_nodes_map = dict()
+stock_nodes_map = dict()
+
+
+def get_stockservices_adresses():
+    values = client.get_prefix(stock_route)
+    for value, x in values:
+        yield value.decode("utf-8")
 
 
 def get_geoservices_adresses():
@@ -79,6 +110,8 @@ def get_authservices_addresses():
 
 geoservices_addresses_string = get_geoservices_adresses()
 
+stockservices_addresses_string = get_stockservices_adresses()
+
 auth_addresses_string = get_authservices_addresses()
 
 
@@ -90,6 +123,10 @@ geoservices_channels = list(map(create_channel, geoservices_addresses_string))
 
 geoservices_addresses = GeoServiceClient(geoservices_channels)
 
+stockservices_channels = list(map(create_channel, stockservices_addresses_string))
+
+stockservices_addresses = StockServiceClient(stockservices_channels)
+
 auth_channels = list(map(create_channel, auth_addresses_string))
 
 auth_addresses = AuthServiceClient(auth_channels)
@@ -97,6 +134,15 @@ auth_addresses = AuthServiceClient(auth_channels)
 
 # lo que tengo que hacer ahora es primero levantar los que este publicados y crearlos
 # despues tengo que armarme un watcher que sepa reaccionar al auth y al geo
+
+
+@app.route('/api/products', methods=['POST'])
+def get_products():
+    content = request.get_json()
+    response = authenticate(content)
+    if response['status'] == constants['authenticated']:
+        return {"products": stockservices_addresses.get_products_from_country(content["country"])}
+    return {"error": "Not-authenticated"}
 
 
 @app.route('/api/countries', methods=['POST'])

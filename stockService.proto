@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+message Country {
+  string name = 1;
+}
+
+service StockService {
+  rpc GetProductsFromCountry(Country) returns (GetProductFromCountryPayload);
+}
+
+message Product {
+  string name = 1;
+  string price = 2;
+  string count = 3;
+}
+
+message GetProductFromCountryPayload {
+  repeated Product product = 1;
+}
