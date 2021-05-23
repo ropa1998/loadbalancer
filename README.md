@@ -24,7 +24,11 @@ A list of string with the host and port for the instances of geoservices
 
 ### authservices
 
-A list of string with the host and port for the instances of geoservices
+A list of string with the host and port for the instances of authservices
+
+### stockservices
+
+A list of string with the host and port for the instances of stockservices
 
 ### max_retries
 

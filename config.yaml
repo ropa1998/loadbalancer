@@ -4,5 +4,7 @@ geoservices:
 authservices:
   - "localhost:9090"
   - "localhost:9091"
+stockservices:
+  - "localhost:40041"
 max_retries: 10
 
