@@ -20,7 +20,7 @@ class StockServiceClient:
     @retry(stop_max_attempt_number=max_retries)
     def get_products_from_country(self, country):
         stub = self.get_stub()
-        country = stockService_pb2.Country(name=country)
+        country = stockService_pb2.CountryProduct(name=country)
         response = stub.GetProductsFromCountry(country)
         return list(response.products)
 

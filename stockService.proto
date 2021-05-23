@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-message Country {
+message CountryProduct {
   string name = 1;
 }
 
 service StockService {
-  rpc GetProductsFromCountry(Country) returns (GetProductFromCountryPayload);
+  rpc GetProductsFromCountry(CountryProduct) returns (GetProductFromCountryPayload);
 }
 
 message Product {

@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from proto import stockService_pb2 as proto_dot_stockService__pb2
+import stockService_pb2 as stockService__pb2
 
 
 class StockServiceStub(object):
@@ -16,8 +16,8 @@ class StockServiceStub(object):
         """
         self.GetProductsFromCountry = channel.unary_unary(
                 '/StockService/GetProductsFromCountry',
-                request_serializer=proto_dot_stockService__pb2.Country.SerializeToString,
-                response_deserializer=proto_dot_stockService__pb2.GetProductFromCountryPayload.FromString,
+                request_serializer=stockService__pb2.CountryProduct.SerializeToString,
+                response_deserializer=stockService__pb2.GetProductFromCountryPayload.FromString,
                 )
 
 
@@ -35,8 +35,8 @@ def add_StockServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetProductsFromCountry': grpc.unary_unary_rpc_method_handler(
                     servicer.GetProductsFromCountry,
-                    request_deserializer=proto_dot_stockService__pb2.Country.FromString,
-                    response_serializer=proto_dot_stockService__pb2.GetProductFromCountryPayload.SerializeToString,
+                    request_deserializer=stockService__pb2.CountryProduct.FromString,
+                    response_serializer=stockService__pb2.GetProductFromCountryPayload.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -60,7 +60,7 @@ class StockService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/StockService/GetProductsFromCountry',
-            proto_dot_stockService__pb2.Country.SerializeToString,
-            proto_dot_stockService__pb2.GetProductFromCountryPayload.FromString,
+            stockService__pb2.CountryProduct.SerializeToString,
+            stockService__pb2.GetProductFromCountryPayload.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

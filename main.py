@@ -132,10 +132,6 @@ auth_channels = list(map(create_channel, auth_addresses_string))
 auth_addresses = AuthServiceClient(auth_channels)
 
 
-# lo que tengo que hacer ahora es primero levantar los que este publicados y crearlos
-# despues tengo que armarme un watcher que sepa reaccionar al auth y al geo
-
-
 @app.route('/api/products', methods=['POST'])
 def get_products():
     content = request.get_json()
