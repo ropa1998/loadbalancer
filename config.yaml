@@ -1,10 +1,8 @@
 geoservices:
-  - "localhost:50051"
-  - "localhost:50052"
+  - "geo:50051"
 authservices:
-  - "localhost:9090"
-  - "localhost:9091"
+  - "auth:9090"
 stockservices:
-  - "localhost:40041"
+  - "stock:40041"
 max_retries: 10
 

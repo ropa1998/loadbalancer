@@ -8,3 +8,4 @@ flask
 retrying
 pyyaml
 etcd3
+flask-cors

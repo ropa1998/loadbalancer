@@ -1,9 +1,11 @@
 # open a gRPC channel
 import yaml
 from retrying import retry
+import json
 
 import stockService_pb2
 import stockService_pb2_grpc
+from google.protobuf.json_format import MessageToJson
 
 from load_balancer.RoundRobinBalancer import RoundRobinBalancer
 
@@ -22,7 +24,8 @@ class StockServiceClient:
         stub = self.get_stub()
         country = stockService_pb2.CountryProduct(name=country)
         response = stub.GetProductsFromCountry(country)
-        return list(response.products)
+        json_obj = MessageToJson(response)
+        return json.loads(json_obj)["product"]
 
     def get_stub(self):
         channel = self.balancer.get_channel()
