@@ -137,7 +137,7 @@ def get_products():
     content = request.get_json()
     response = authenticate(content)
     if response['status'] == constants['authenticated']:
-        return {"products": stockservices_addresses.get_products_from_country(content["country"])}
+        return {"products": stockservices_addresses.get_products_from_country(content["country"]), "country": content["country"]}
     return {"error": "Not-authenticated"}
 
 
